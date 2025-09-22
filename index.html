@@ -24,7 +24,15 @@
             max-width: 400px;
             margin: 0 auto;
         }
-
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 0 20px gold; }
+            100% { transform: scale(1); }
+        }
+        
+        .scroll-item.active {
+            transition: all 0.3s ease;
+        }
         .header {
             display: flex;
             justify-content: space-between;
@@ -859,4 +867,5 @@ function finishOpening(wonItem) {
     </script>
 </body>
 </html>
+
 
