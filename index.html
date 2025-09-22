@@ -17,7 +17,7 @@
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: white;
             min-height: 100vh;
-            padding: 20px;
+            padding: 20px 20px 80px 20px; /* Отступ снизу для фиксированного меню */
         }
 
         .container {
@@ -29,7 +29,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             padding: 15px;
             background: rgba(255,255,255,0.1);
             border-radius: 15px;
@@ -67,33 +67,89 @@
             cursor: pointer;
         }
 
-        .tabs {
+        /* Промокод баннер */
+        .promo-banner {
+            background: linear-gradient(45deg, #FF416C, #FF4B2B);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+            animation: glow 2s infinite;
+            font-size: 14px;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px #FF416C; }
+            50% { box-shadow: 0 0 20px #FF4B2B; }
+            100% { box-shadow: 0 0 10px #FF416C; }
+        }
+
+        .promo-code {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        /* Фиксированное меню внизу */
+        .bottom-tabs {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
             display: flex;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 5px;
-            margin-bottom: 20px;
+            padding: 10px 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            z-index: 1000;
         }
 
         .tab-btn {
             flex: 1;
             text-align: center;
-            padding: 12px;
+            padding: 12px 5px;
             cursor: pointer;
-            border-radius: 10px;
+            border-radius: 12px;
             transition: all 0.3s;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
         }
 
         .tab-btn.active {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-5px);
+        }
+
+        .tab-btn .emoji {
+            font-size: 20px;
         }
 
         .tab-content {
             display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .tab-content.active {
             display: block;
+        }
+
+        /* Стили для контента */
+        .section-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
         }
 
         .cases-grid {
@@ -116,23 +172,6 @@
         .case-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        .case-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: rotate(45deg);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
         .case-image {
@@ -159,6 +198,7 @@
             font-weight: bold;
         }
 
+        /* Редкости предметов */
         .rarity-common { border-color: #bdc3c7 !important; }
         .rarity-rare { border-color: #3498db !important; }
         .rarity-epic { border-color: #9b59b6 !important; }
@@ -176,7 +216,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 2000;
         }
 
         .case-opening-container {
@@ -193,6 +233,7 @@
             padding: 20px;
             background: rgba(255,255,255,0.1);
             border-radius: 15px;
+            max-height: 150px;
         }
 
         .scroll-item {
@@ -255,6 +296,37 @@
             cursor: pointer;
             margin-top: 15px;
         }
+
+        /* Стили для заданий и профиля */
+        .task-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 12px;
+        }
+
+        .profile-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .balance {
+            font-size: 28px;
+            font-weight: bold;
+            color: #FFD700;
+            margin: 10px 0;
+        }
+
+        .ref-link {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            word-break: break-all;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -268,16 +340,17 @@
             <button class="deposit-btn" onclick="openDeposit()">Пополнение</button>
         </div>
 
-        <!-- Табы -->
-        <div class="tabs">
-            <div class="tab-btn active" onclick="showTab('cases')">🎁 Кейсы</div>
-            <div class="tab-btn" onclick="showTab('tasks')">📋 Задания</div>
-            <div class="tab-btn" onclick="showTab('profile')">👤 Профиль</div>
+        <!-- Промокод баннер -->
+        <div id="promoBanner" class="promo-banner" style="display: none;">
+            <div><strong>🎊 ПРОМОКОД ДЕЙСТВУЕТ СЕЙЧАС!</strong></div>
+            <div>Используйте при пополнении для бонуса +<span id="promoPercent">0</span>%</div>
+            <div class="promo-code" id="promoCodeDisplay">Загрузка...</div>
+            <div id="promoDescription"></div>
         </div>
 
         <!-- Контент кейсов -->
         <div id="cases" class="tab-content active">
-            <h2 style="text-align: center; margin-bottom: 20px;">🎁 Выберите кейс</h2>
+            <h2 class="section-title">🎁 Выберите кейс</h2>
             <div class="cases-grid" id="casesGrid">
                 <!-- Кейсы загружаются через JavaScript -->
             </div>
@@ -285,7 +358,7 @@
 
         <!-- Контент заданий -->
         <div id="tasks" class="tab-content">
-            <h2 style="text-align: center; margin-bottom: 20px;">📋 Доступные задания</h2>
+            <h2 class="section-title">📋 Доступные задания</h2>
             <div id="tasksList">
                 <!-- Задания загружаются через JavaScript -->
             </div>
@@ -293,10 +366,26 @@
 
         <!-- Контент профиля -->
         <div id="profile" class="tab-content">
-            <h2 style="text-align: center; margin-bottom: 20px;">👤 Ваш профиль</h2>
+            <h2 class="section-title">👤 Ваш профиль</h2>
             <div id="profileInfo">
                 <!-- Профиль загружается через JavaScript -->
             </div>
+        </div>
+    </div>
+
+    <!-- Фиксированное меню внизу -->
+    <div class="bottom-tabs">
+        <div class="tab-btn active" onclick="showTab('cases')">
+            <span class="emoji">🎁</span>
+            <span>Кейсы</span>
+        </div>
+        <div class="tab-btn" onclick="showTab('tasks')">
+            <span class="emoji">📋</span>
+            <span>Задания</span>
+        </div>
+        <div class="tab-btn" onclick="showTab('profile')">
+            <span class="emoji">👤</span>
+            <span>Профиль</span>
         </div>
     </div>
 
@@ -322,6 +411,18 @@
         </div>
     </div>
 
+    <!-- Пополнение баланса -->
+    <div id="depositModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center;">
+        <div style="background: #2d3436; padding: 30px; border-radius: 20px; text-align: center; max-width: 300px;">
+            <h3>💳 Пополнение баланса</h3>
+            <input type="number" id="depositAmount" placeholder="Сумма в рублях" style="width: 100%; padding: 10px; margin: 15px 0; border-radius: 10px; border: none;">
+            <input type="text" id="promoCodeInput" placeholder="Промокод (необязательно)" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 10px; border: none;">
+            <div id="promoBonus" style="margin: 10px 0; color: #FFD700;"></div>
+            <button onclick="processDeposit()" style="background: #27ae60; color: white; border: none; padding: 12px 30px; border-radius: 10px; cursor: pointer; margin: 5px;">Пополнить</button>
+            <button onclick="closeDeposit()" style="background: #e74c3c; color: white; border: none; padding: 12px 30px; border-radius: 10px; cursor: pointer; margin: 5px;">Отмена</button>
+        </div>
+    </div>
+
     <script>
         // Инициализация Telegram Web App
         let tg = window.Telegram.WebApp;
@@ -335,65 +436,99 @@
             refCount: 3
         };
 
-        // База данных предметов
+        // Промокоды (можно менять через админку)
+        const promoCodes = {
+            "WELCOME20": { percent: 20, description: "Приветственный бонус +20%" },
+            "SUPER50": { percent: 50, description: "Супер промокод +50%" },
+            "BONUS30": { percent: 30, description: "Бонус на пополнение +30%" },
+            "RICH100": { percent: 100, description: "Удвой свой депозит +100%" }
+        };
+
+        let currentPromo = "WELCOME20"; // Активный промокод
+
+        // База данных предметов с РАЗНЫМИ вероятностями для каждого кейса
         const itemsDatabase = [
-            // Common (60%)
-            { id: 1, name: "🔧 Обычный инструмент", rarity: "common", emoji: "🔧", probability: 60 },
-            { id: 2, name: "📦 Простая коробка", rarity: "common", emoji: "📦", probability: 60 },
-            { id: 3, name: "💧 Капля воды", rarity: "common", emoji: "💧", probability: 60 },
-            { id: 4, name: "🌿 Листок", rarity: "common", emoji: "🌿", probability: 60 },
+            // Common
+            { id: 1, name: "🔧 Обычный инструмент", rarity: "common", emoji: "🔧" },
+            { id: 2, name: "📦 Простая коробка", rarity: "common", emoji: "📦" },
+            { id: 3, name: "💧 Капля воды", rarity: "common", emoji: "💧" },
+            { id: 4, name: "🌿 Листок", rarity: "common", emoji: "🌿" },
             
-            // Rare (25%)
-            { id: 5, name: "🔮 Магический шар", rarity: "rare", emoji: "🔮", probability: 25 },
-            { id: 6, name: "⚡ Молния", rarity: "rare", emoji: "⚡", probability: 25 },
-            { id: 7, name: "🛡️ Щит воина", rarity: "rare", emoji: "🛡️", probability: 25 },
-            { id: 8, name: "🎯 Меткий глаз", rarity: "rare", emoji: "🎯", probability: 25 },
+            // Rare
+            { id: 5, name: "🔮 Магический шар", rarity: "rare", emoji: "🔮" },
+            { id: 6, name: "⚡ Молния", rarity: "rare", emoji: "⚡" },
+            { id: 7, name: "🛡️ Щит воина", rarity: "rare", emoji: "🛡️" },
+            { id: 8, name: "🎯 Меткий глаз", rarity: "rare", emoji: "🎯" },
             
-            // Epic (10%)
-            { id: 9, name: "🔥 Огненный меч", rarity: "epic", emoji: "🔥", probability: 10 },
-            { id: 10, name: "❄️ Ледяная корона", rarity: "epic", emoji: "❄️", probability: 10 },
-            { id: 11, name: "💎 Алмаз", rarity: "epic", emoji: "💎", probability: 10 },
-            { id: 12, name: "👑 Королевский скипетр", rarity: "epic", emoji: "👑", probability: 10 },
+            // Epic
+            { id: 9, name: "🔥 Огненный меч", rarity: "epic", emoji: "🔥" },
+            { id: 10, name: "❄️ Ледяная корона", rarity: "epic", emoji: "❄️" },
+            { id: 11, name: "💎 Алмаз", rarity: "epic", emoji: "💎" },
+            { id: 12, name: "👑 Королевский скипетр", rarity: "epic", emoji: "👑" },
             
-            // Legendary (4%)
-            { id: 13, name: "🐉 Драконье яйцо", rarity: "legendary", emoji: "🐉", probability: 4 },
-            { id: 14, name: "🌈 Радужный артефакт", rarity: "legendary", emoji: "🌈", probability: 4 },
-            { id: 15, name: "⚔️ Меч богов", rarity: "legendary", emoji: "⚔️", probability: 4 },
+            // Legendary
+            { id: 13, name: "🐉 Драконье яйцо", rarity: "legendary", emoji: "🐉" },
+            { id: 14, name: "🌈 Радужный артефакт", rarity: "legendary", emoji: "🌈" },
+            { id: 15, name: "⚔️ Меч богов", rarity: "legendary", emoji: "⚔️" },
             
-            // Mythical (1%)
-            { id: 16, name: "🌟 Звезда судьбы", rarity: "mythical", emoji: "🌟", probability: 1 },
-            { id: 17, name: "💫 Космический кристалл", rarity: "mythical", emoji: "💫", probability: 1 }
+            // Mythical
+            { id: 16, name: "🌟 Звезда судьбы", rarity: "mythical", emoji: "🌟" },
+            { id: 17, name: "💫 Космический кристалл", rarity: "mythical", emoji: "💫" }
         ];
 
-        // База данных кейсов
+        // База данных кейсов с РАЗНЫМИ вероятностями для каждого
         const casesDatabase = [
             {
                 id: 1,
                 name: "📦 Базовый кейс",
                 price: 100,
                 emoji: "📦",
-                items: itemsDatabase.filter(item => item.probability >= 10) // Все кроме mythical
+                items: [
+                    // Common: 70%, Rare: 20%, Epic: 8%, Legendary: 2%
+                    ...itemsDatabase.filter(i => i.rarity === "common").map(i => ({...i, probability: 70/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "rare").map(i => ({...i, probability: 20/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "epic").map(i => ({...i, probability: 8/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "legendary").map(i => ({...i, probability: 2/3}))
+                ]
             },
             {
                 id: 2,
                 name: "💎 Премиум кейс",
                 price: 500,
                 emoji: "💎",
-                items: itemsDatabase.filter(item => item.probability <= 25) // Rare, Epic, Legendary, Mythical
+                items: [
+                    // Common: 40%, Rare: 35%, Epic: 15%, Legendary: 8%, Mythical: 2%
+                    ...itemsDatabase.filter(i => i.rarity === "common").map(i => ({...i, probability: 40/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "rare").map(i => ({...i, probability: 35/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "epic").map(i => ({...i, probability: 15/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "legendary").map(i => ({...i, probability: 8/3})),
+                    ...itemsDatabase.filter(i => i.rarity === "mythical").map(i => ({...i, probability: 2/2}))
+                ]
             },
             {
                 id: 3,
                 name: "🔥 Огненный кейс",
                 price: 1000,
                 emoji: "🔥",
-                items: itemsDatabase.filter(item => item.probability <= 10) // Epic, Legendary, Mythical
+                items: [
+                    // Rare: 50%, Epic: 30%, Legendary: 15%, Mythical: 5%
+                    ...itemsDatabase.filter(i => i.rarity === "rare").map(i => ({...i, probability: 50/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "epic").map(i => ({...i, probability: 30/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "legendary").map(i => ({...i, probability: 15/3})),
+                    ...itemsDatabase.filter(i => i.rarity === "mythical").map(i => ({...i, probability: 5/2}))
+                ]
             },
             {
                 id: 4,
                 name: "👑 Легендарный кейс",
                 price: 5000,
                 emoji: "👑",
-                items: itemsDatabase.filter(item => item.probability <= 4) // Legendary, Mythical
+                items: [
+                    // Epic: 40%, Legendary: 40%, Mythical: 20%
+                    ...itemsDatabase.filter(i => i.rarity === "epic").map(i => ({...i, probability: 40/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "legendary").map(i => ({...i, probability: 40/3})),
+                    ...itemsDatabase.filter(i => i.rarity === "mythical").map(i => ({...i, probability: 20/2}))
+                ]
             }
         ];
 
@@ -402,49 +537,76 @@
 
         // Загрузка данных при запуске
         function loadUserData() {
+            loadPromoBanner();
             updateProfile();
             loadCases();
             loadTasks();
         }
 
+        function loadPromoBanner() {
+            const promo = promoCodes[currentPromo];
+            if (promo) {
+                document.getElementById('promoBanner').style.display = 'block';
+                document.getElementById('promoPercent').textContent = promo.percent;
+                document.getElementById('promoCodeDisplay').textContent = currentPromo;
+                document.getElementById('promoDescription').textContent = promo.description;
+            }
+        }
+
         function updateProfile() {
             document.getElementById('profileInfo').innerHTML = `
-                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; text-align: center;">
-                    <div style="font-size: 24px; font-weight: bold; color: #FFD700;">${userData.balance} жетонов</div>
+                <div class="profile-card">
+                    <div class="balance">${userData.balance} жетонов</div>
                     <div style="margin: 15px 0;">
                         <div>Реферальная ссылка:</div>
-                        <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px; margin: 10px 0; word-break: break-all;">
-                            ${userData.refLink}
-                        </div>
+                        <div class="ref-link">${userData.refLink}</div>
                     </div>
                     <div>Приглашено друзей: ${userData.refCount}</div>
+                    <button onclick="copyRefLink()" style="background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin-top: 10px;">📋 Скопировать ссылку</button>
                 </div>
             `;
         }
 
+        function copyRefLink() {
+            navigator.clipboard.writeText(userData.refLink);
+            alert('Ссылка скопирована в буфер обмена!');
+        }
+
         function loadCases() {
             const grid = document.getElementById('casesGrid');
-            grid.innerHTML = casesDatabase.map(caseItem => `
-                <div class="case-card" onclick="selectCase(${caseItem.id})">
-                    <div class="case-image">${caseItem.emoji}</div>
-                    <div class="case-name">${caseItem.name}</div>
-                    <div class="case-price">${caseItem.price} жетонов</div>
-                    <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">
-                        Шанс на легендарку: ${Math.max(...caseItem.items.map(i => i.probability))}%
+            grid.innerHTML = casesDatabase.map(caseItem => {
+                const rarityStats = calculateRarityStats(caseItem.items);
+                return `
+                    <div class="case-card" onclick="selectCase(${caseItem.id})">
+                        <div class="case-image">${caseItem.emoji}</div>
+                        <div class="case-name">${caseItem.name}</div>
+                        <div class="case-price">${caseItem.price} жетонов</div>
+                        <div style="font-size: 12px; opacity: 0.8; margin-top: 8px;">
+                            Шансы: ЛЕГ ${rarityStats.legendary}% | МИФ ${rarityStats.mythical}%
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+        }
+
+        function calculateRarityStats(items) {
+            const stats = { common: 0, rare: 0, epic: 0, legendary: 0, mythical: 0 };
+            items.forEach(item => {
+                stats[item.rarity] += item.probability;
+            });
+            return stats;
         }
 
         function loadTasks() {
             const tasks = [
                 { title: "📱 Подписка на канал", reward: 50, completed: false },
                 { title: "👥 Пригласите друга", reward: 100, completed: false },
-                { title: "🎮 Ежедневный вход", reward: 10, completed: true }
+                { title: "🎮 Ежедневный вход", reward: 10, completed: true },
+                { title: "💎 Откройте 3 кейса", reward: 150, completed: false }
             ];
 
             document.getElementById('tasksList').innerHTML = tasks.map(task => `
-                <div style="background: rgba(255,255,255,0.1); padding: 15px; margin: 10px 0; border-radius: 10px;">
+                <div class="task-item">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <div style="font-weight: bold;">${task.title}</div>
@@ -474,7 +636,6 @@
             document.getElementById('startBtn').style.display = 'block';
             document.getElementById('result').style.display = 'none';
 
-            // Заполняем прокрутку предметами
             const scroll = document.getElementById('itemsScroll');
             scroll.innerHTML = currentCase.items.map(item => `
                 <div class="scroll-item rarity-${item.rarity}">
@@ -492,44 +653,37 @@
             userData.balance -= currentCase.price;
             updateProfile();
 
-            // Анимация прокрутки
             const scroll = document.getElementById('itemsScroll');
             const items = scroll.children;
             let currentIndex = 0;
             const totalItems = items.length;
-            const scrollDuration = 3000; // 3 секунды прокрутки
-            const interval = 100; // Обновление каждые 100ms
+            const scrollDuration = 3000;
+            const interval = 100;
 
             let startTime = Date.now();
-            let speed = 5; // Начальная скорость (items в секунду)
+            let speed = 5;
 
             function animateScroll() {
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / scrollDuration, 1);
 
-                // Замедление к концу
                 if (progress > 0.7) {
                     speed = Math.max(1, 5 * (1 - progress) * 3);
                 }
 
                 currentIndex = (currentIndex + speed * interval / 1000) % totalItems;
 
-                // Сбрасываем активный класс
                 for (let item of items) {
                     item.classList.remove('active');
                 }
 
-                // Устанавливаем активный элемент
                 const activeIndex = Math.floor(currentIndex);
                 items[activeIndex].classList.add('active');
-
-                // Прокрутка к активному элементу
                 scroll.scrollLeft = activeIndex * 95;
 
                 if (progress < 1) {
                     setTimeout(animateScroll, interval);
                 } else {
-                    // Завершение анимации
                     finishOpening();
                 }
             }
@@ -538,7 +692,7 @@
         }
 
         function finishOpening() {
-            // Выбираем случайный предмет с учетом вероятности
+            // Выбор предмета с учетом вероятности
             let random = Math.random() * 100;
             let cumulativeProbability = 0;
             let wonItem = null;
@@ -551,37 +705,26 @@
                 }
             }
 
-            // Если не выбран предмет (маловероятно), берем первый
             if (!wonItem) wonItem = currentCase.items[0];
 
-            // Показываем результат
             document.getElementById('wonItemName').textContent = wonItem.name;
             document.getElementById('wonItemRarity').textContent = `Редкость: ${getRarityName(wonItem.rarity)}`;
             document.getElementById('wonItem').className = `won-item rarity-${wonItem.rarity}`;
             document.getElementById('result').style.display = 'block';
 
-            // Добавляем награду в зависимости от редкости
             const rewards = {
-                'common': 10,
-                'rare': 25,
-                'epic': 100,
-                'legendary': 500,
-                'mythical': 2000
+                'common': 10, 'rare': 25, 'epic': 100, 'legendary': 500, 'mythical': 2000
             };
 
             userData.balance += rewards[wonItem.rarity];
             updateProfile();
-
             isOpening = false;
         }
 
         function getRarityName(rarity) {
             const names = {
-                'common': 'Обычная',
-                'rare': 'Редкая',
-                'epic': 'Эпическая',
-                'legendary': 'Легендарная',
-                'mythical': 'Мифическая'
+                'common': 'Обычная', 'rare': 'Редкая', 'epic': 'Эпическая', 
+                'legendary': 'Легендарная', 'mythical': 'Мифическая'
             };
             return names[rarity] || rarity;
         }
@@ -592,7 +735,7 @@
         }
 
         function completeTask(button) {
-            const reward = 50; // Пример награды
+            const reward = 50;
             userData.balance += reward;
             button.textContent = '✅ Выполнено';
             button.style.background = '#27ae60';
@@ -601,11 +744,37 @@
         }
 
         function openDeposit() {
-            alert('💳 Система пополнения в разработке!\nСкоро вы сможете пополнять баланс через криптовалюты и карты.');
+            document.getElementById('depositModal').style.display = 'flex';
+            document.getElementById('promoBonus').textContent = '';
+        }
+
+        function closeDeposit() {
+            document.getElementById('depositModal').style.display = 'none';
+        }
+
+        function processDeposit() {
+            const amount = parseInt(document.getElementById('depositAmount').value);
+            const promoCode = document.getElementById('promoCodeInput').value.toUpperCase();
+            
+            if (!amount || amount < 10) {
+                alert('Минимальная сумма пополнения: 10 рублей');
+                return;
+            }
+
+            let bonus = 0;
+            if (promoCode && promoCodes[promoCode]) {
+                bonus = Math.floor(amount * promoCodes[promoCode].percent / 100);
+            }
+
+            const total = amount + bonus;
+            userData.balance += total;
+            
+            alert(`✅ Баланс пополнен на ${total} жетонов!${bonus ? `\n🎁 Бонус за промокод: +${bonus} жетонов` : ''}`);
+            updateProfile();
+            closeDeposit();
         }
 
         function showTab(tabName) {
-            // Скрыть все табы
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -613,10 +782,25 @@
                 btn.classList.remove('active');
             });
 
-            // Показать выбранный таб
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
+
+            // Прокрутка к верху при переключении табов
+            window.scrollTo(0, 0);
         }
+
+        // Автоматическая проверка промокода при вводе
+        document.getElementById('promoCodeInput')?.addEventListener('input', function(e) {
+            const code = e.target.value.toUpperCase();
+            if (promoCodes[code]) {
+                document.getElementById('promoBonus').textContent = 
+                    `✅ Промокод активирован! Бонус: +${promoCodes[code].percent}%`;
+            } else if (code.length > 3) {
+                document.getElementById('promoBonus').textContent = '❌ Промокод не найден';
+            } else {
+                document.getElementById('promoBonus').textContent = '';
+            }
+        });
 
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', loadUserData);
