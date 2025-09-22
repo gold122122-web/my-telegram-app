@@ -3,708 +3,924 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coin Case - Telegram Mini App</title>
+    <title>Coin App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         :root {
-            --tg-bg: var(--tg-theme-bg-color, #0f0f0f);
-            --tg-text: var(--tg-theme-text-color, #ffffff);
-            --tg-hint: var(--tg-theme-hint-color, #aaaaaa);
-            --tg-link: var(--tg-theme-link-color, #5ac8fa);
-            --tg-button: var(--tg-theme-button-color, #2481cc);
-            --tg-button-text: var(--tg-theme-button-text-color, #ffffff);
-            --tg-secondary-bg: var(--tg-theme-secondary-bg-color, #1a1a1a);
-            --tg-accent: #34c759;
-            --tg-warning: #ff9500;
-            --tg-danger: #ff3b30;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #f59e0b;
+            --secondary-dark: #d97706;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --common: #94a3b8;
+            --rare: #3b82f6;
+            --epic: #8b5cf6;
+            --legendary: #f59e0b;
+            --mythical: #ef4444;
         }
 
         body {
-            background: var(--tg-bg);
-            color: var(--tg-text);
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: var(--light);
             min-height: 100vh;
-            padding: 16px 16px 80px 16px;
-            line-height: 1.4;
+            padding: 20px 20px 100px 20px;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
+            z-index: -1;
         }
 
         .container {
-            max-width: 100%;
+            max-width: 450px;
             margin: 0 auto;
+            animation: fadeIn 0.8s ease-out;
         }
 
-        /* Header */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Шапка */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            padding: 16px;
-            background: var(--tg-secondary-bg);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 18px;
-        }
-
-        .balance {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--tg-warning);
-        }
-
-        .deposit-btn {
-            background: var(--tg-button);
-            color: var(--tg-button-text);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .deposit-btn:active {
-            transform: scale(0.95);
-            opacity: 0.8;
-        }
-
-        /* Promo Banner */
-        .promo-banner {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            padding: 14px;
-            border-radius: 14px;
-            text-align: center;
-            margin-bottom: 20px;
+            padding: 18px 20px;
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
         }
 
-        .promo-banner::before {
-            content: '✨';
+        .header::after {
+            content: '';
             position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 20px;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
         }
 
-        .promo-code {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 6px 0;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 6px 12px;
-            border-radius: 8px;
-            display: inline-block;
-            letter-spacing: 1px;
+        .header:hover::after {
+            left: 100%;
         }
 
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--tg-secondary-bg);
+        .online {
             display: flex;
-            padding: 12px 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 1000;
-            backdrop-filter: blur(20px);
-        }
-
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            padding: 8px;
-            cursor: pointer;
-            border-radius: 12px;
-            transition: all 0.2s ease;
-            opacity: 0.7;
-        }
-
-        .nav-item.active {
-            opacity: 1;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        .nav-label {
-            font-size: 11px;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
             font-weight: 500;
         }
 
-        /* Tab Content */
+        .online-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .online-dot::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 50%;
+            border: 1px solid var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        .deposit-btn {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 15px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .deposit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .deposit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .deposit-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Промокод баннер */
+        .promo-banner {
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+            padding: 16px;
+            border-radius: 18px;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+            animation: glow 3s infinite alternate;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 5px 20px rgba(236, 72, 153, 0.4); }
+            100% { box-shadow: 0 5px 30px rgba(139, 92, 246, 0.6); }
+        }
+
+        .promo-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, white, transparent);
+        }
+
+        .promo-code {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 12px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            letter-spacing: 1px;
+        }
+
+        /* Фиксированное меню внизу */
+        .bottom-tabs {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 450px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            padding: 12px 20px;
+            border-radius: 25px 25px 0 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            margin-bottom: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px 5px;
+            cursor: pointer;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            position: relative;
+            color: var(--gray);
+        }
+
+        .tab-btn.active {
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .tab-btn.active::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            width: 30px;
+            height: 3px;
+            background: var(--secondary);
+            border-radius: 3px;
+        }
+
+        .tab-btn .emoji {
+            font-size: 22px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active .emoji {
+            transform: scale(1.2);
+        }
+
         .tab-content {
             display: none;
-            animation: fadeIn 0.3s ease;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .tab-content.active {
             display: block;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Стили для контента */
+        .section-title {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+            width: 100%;
         }
 
-        /* Cases Grid */
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-align: center;
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
         }
 
         .cases-grid {
             display: grid;
-            gap: 12px;
-            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
         }
 
         .case-card {
-            background: var(--tg-secondary-bg);
-            border-radius: 16px;
-            padding: 16px;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border-radius: 20px;
+            padding: 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .case-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .case-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .case-image {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .case-card:hover .case-image {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .case-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .case-price {
+            color: var(--secondary);
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .case-stats {
+            font-size: 12px;
+            opacity: 0.8;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Редкости предметов */
+        .rarity-common { 
+            border-color: var(--common) !important; 
+            background: linear-gradient(135deg, rgba(148, 163, 184, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+        }
+        
+        .rarity-rare { 
+            border-color: var(--rare) !important; 
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+        }
+        
+        .rarity-epic { 
+            border-color: var(--epic) !important; 
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+        }
+        
+        .rarity-legendary { 
+            border-color: var(--legendary) !important; 
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+        }
+        
+        .rarity-mythical { 
+            border-color: var(--mythical) !important; 
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+        }
+
+        /* Анимация открытия кейса */
+        .case-opening-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+
+        .case-opening-container {
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 25px;
+            padding: 30px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
             position: relative;
             overflow: hidden;
         }
 
-        .case-card:active {
-            transform: scale(0.98);
+        .case-opening-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
         }
 
-        .case-image {
+        .items-scroll {
+            display: flex;
+            gap: 15px;
+            overflow: hidden;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 15px;
+            max-height: 150px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .scroll-item {
+            min-width: 80px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .scroll-item.active {
+            transform: scale(1.2);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+
+        .item-image {
             width: 60px;
             height: 60px;
-            margin: 0 auto 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0 auto 10px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 28px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .won-item {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--legendary) 100%);
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 20px;
+            animation: bounce 0.8s;
+            color: white;
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .won-item::before {
+            content: '🎉';
+            position: absolute;
+            top: 10px;
+            right: 10px;
             font-size: 24px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .case-name {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .case-price {
-            color: var(--tg-warning);
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .case-stats {
-            font-size: 10px;
             opacity: 0.7;
-            margin-top: 6px;
         }
 
-        /* Tasks List */
-        .tasks-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-15px);}
+            60% {transform: translateY(-7px);}
         }
 
-        .task-item {
-            background: var(--tg-secondary-bg);
-            padding: 16px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .task-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .task-reward {
-            background: var(--tg-accent);
-            color: #000;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .task-btn {
-            background: var(--tg-button);
-            color: var(--tg-button-text);
+        .open-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             border: none;
-            padding: 8px 16px;
-            border-radius: 10px;
+            padding: 16px 40px;
+            border-radius: 25px;
+            color: white;
+            font-size: 18px;
             font-weight: 600;
             cursor: pointer;
-            width: 100%;
-            margin-top: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .task-btn:active {
-            transform: scale(0.95);
-        }
-
-        .task-btn:disabled {
-            background: var(--tg-hint);
-            cursor: not-allowed;
-        }
-
-        /* Profile */
-        .profile-card {
-            background: var(--tg-secondary-bg);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .profile-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin: 16px 0;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--tg-warning);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            opacity: 0.7;
-            margin-top: 4px;
-        }
-
-        .ref-section {
             margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .open-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.6);
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Стили для заданий и профиля */
+        .task-item {
+            background: rgba(30, 41, 59, 0.7);
+            padding: 18px;
+            margin: 12px 0;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .task-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .balance {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 15px 0;
+            text-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
         }
 
         .ref-link {
             background: rgba(255, 255, 255, 0.05);
             padding: 12px;
             border-radius: 12px;
+            margin: 15px 0;
             word-break: break-all;
-            font-size: 12px;
-            margin: 8px 0;
+            font-size: 14px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Case Opening Modal */
+        /* Модальное окно пополнения */
         .modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
+            background: rgba(2, 6, 23, 0.9);
+            z-index: 2000;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
-            padding: 16px;
+            backdrop-filter: blur(10px);
         }
 
         .modal-content {
-            background: var(--tg-secondary-bg);
-            border-radius: 20px;
-            padding: 24px;
-            width: 100%;
-            max-width: 400px;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+            padding: 30px;
+            border-radius: 25px;
             text-align: center;
+            max-width: 320px;
+            width: 90%;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
         }
 
-        .items-scroll {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            margin: 20px 0;
-            padding: 16px 0;
-            scrollbar-width: none;
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
         }
 
-        .items-scroll::-webkit-scrollbar {
-            display: none;
-        }
-
-        .scroll-item {
-            flex: 0 0 auto;
-            width: 70px;
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+        .modal-input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.7);
+            color: white;
+            font-size: 16px;
             transition: all 0.3s ease;
         }
 
-        .scroll-item.active {
-            transform: scale(1.1);
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .item-image {
-            width: 40px;
-            height: 40px;
-            margin: 0 auto 6px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .won-item {
-            background: linear-gradient(135deg, var(--tg-warning) 0%, #ff9500 100%);
-            padding: 20px;
-            border-radius: 16px;
-            margin-top: 16px;
-            color: #000;
-            font-weight: 600;
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
         }
 
         .modal-btn {
-            background: var(--tg-button);
-            color: var(--tg-button-text);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 14px 30px;
             border-radius: 12px;
-            font-weight: 600;
             cursor: pointer;
-            margin: 8px;
-            width: calc(100% - 16px);
-            transition: all 0.2s ease;
-        }
-
-        .modal-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Rarity Colors */
-        .rarity-common { border-left: 3px solid #94a3b8; }
-        .rarity-rare { border-left: 3px solid #3b82f6; }
-        .rarity-epic { border-left: 3px solid #8b5cf6; }
-        .rarity-legendary { border-left: 3px solid #f59e0b; }
-        .rarity-mythical { border-left: 3px solid #ef4444; }
-
-        /* Toast Notifications */
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: var(--tg-secondary-bg);
-            color: var(--tg-text);
-            padding: 12px 20px;
-            border-radius: 12px;
-            z-index: 3000;
+            margin: 8px 5px;
             font-weight: 600;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 140px;
         }
 
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
         }
 
-        /* Loading States */
-        .skeleton {
-            background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 8px;
+        .modal-btn.cancel {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
         }
 
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+        .modal-btn.cancel:hover {
+            background: var(--danger);
+            color: white;
         }
 
-        /* Responsive */
-        @media (max-width: 360px) {
-            .cases-grid {
-                grid-template-columns: 1fr;
+        /* Адаптивность */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
             }
             
-            .profile-stats {
-                grid-template-columns: 1fr;
+            .header {
+                padding: 15px;
+            }
+            
+            .case-image {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+            
+            .bottom-tabs {
+                width: calc(100% - 20px);
+                padding: 10px 15px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        <!-- Шапка -->
         <div class="header">
-            <div class="user-info">
-                <div class="user-avatar" id="userAvatar">U</div>
-                <div>
-                    <div id="userName">Пользователь</div>
-                    <div class="balance" id="userBalance">0 жетонов</div>
-                </div>
+            <div class="online">
+                <div class="online-dot"></div>
+                <span>Online: 1,234</span>
             </div>
-            <button class="deposit-btn" onclick="openDeposit()">Пополнить</button>
+            <button class="deposit-btn" onclick="openDeposit()">Пополнение</button>
         </div>
 
-        <!-- Promo Banner -->
+        <!-- Промокод баннер -->
         <div id="promoBanner" class="promo-banner" style="display: none;">
-            <div style="font-weight: 600;">🎁 АКТИВНЫЙ ПРОМОКОД</div>
-            <div style="font-size: 12px; opacity: 0.9;">Бонус +<span id="promoPercent">0</span>% к пополнению</div>
+            <div><strong>🎊 АКТИВНЫЙ ПРОМОКОД!</strong></div>
+            <div>Используйте при пополнении для бонуса +<span id="promoPercent">0</span>%</div>
             <div class="promo-code" id="promoCodeDisplay">Загрузка...</div>
+            <div id="promoDescription"></div>
         </div>
 
-        <!-- Cases Tab -->
+        <!-- Контент кейсов -->
         <div id="cases" class="tab-content active">
-            <h2 class="section-title">🎁 Доступные кейсы</h2>
+            <h2 class="section-title">🎁 Выберите кейс</h2>
             <div class="cases-grid" id="casesGrid">
-                <!-- Cases loaded by JavaScript -->
+                <!-- Кейсы загружаются через JavaScript -->
             </div>
         </div>
 
-        <!-- Tasks Tab -->
+        <!-- Контент заданий -->
         <div id="tasks" class="tab-content">
-            <h2 class="section-title">📋 Ежедневные задания</h2>
-            <div class="tasks-list" id="tasksList">
-                <!-- Tasks loaded by JavaScript -->
+            <h2 class="section-title">📋 Доступные задания</h2>
+            <div id="tasksList">
+                <!-- Задания загружаются через JavaScript -->
             </div>
         </div>
 
-        <!-- Profile Tab -->
+        <!-- Контент профиля -->
         <div id="profile" class="tab-content">
-            <h2 class="section-title">👤 Мой профиль</h2>
-            <div class="profile-card">
-                <div class="profile-stats">
-                    <div class="stat-item">
-                        <div class="stat-value" id="statBalance">0</div>
-                        <div class="stat-label">Баланс</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="statCases">0</div>
-                        <div class="stat-label">Кейсы открыто</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="statRefs">0</div>
-                        <div class="stat-label">Рефералы</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="statLevel">1</div>
-                        <div class="stat-label">Уровень</div>
-                    </div>
-                </div>
-                
-                <div class="ref-section">
-                    <div style="font-weight: 600; margin-bottom: 8px;">Реферальная ссылка</div>
-                    <div class="ref-link" id="refLink">Загрузка...</div>
-                    <button class="task-btn" onclick="copyRefLink()">📋 Скопировать ссылку</button>
-                </div>
+            <h2 class="section-title">👤 Ваш профиль</h2>
+            <div id="profileInfo">
+                <!-- Профиль загружается через JavaScript -->
             </div>
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="showTab('cases')">
-            <div class="nav-icon">🎁</div>
-            <div class="nav-label">Кейсы</div>
+    <!-- Фиксированное меню внизу -->
+    <div class="bottom-tabs">
+        <div class="tab-btn active" onclick="showTab('cases')">
+            <span class="emoji">🎁</span>
+            <span>Кейсы</span>
         </div>
-        <div class="nav-item" onclick="showTab('tasks')">
-            <div class="nav-icon">📋</div>
-            <div class="nav-label">Задания</div>
+        <div class="tab-btn" onclick="showTab('tasks')">
+            <span class="emoji">📋</span>
+            <span>Задания</span>
         </div>
-        <div class="nav-item" onclick="showTab('profile')">
-            <div class="nav-icon">👤</div>
-            <div class="nav-label">Профиль</div>
+        <div class="tab-btn" onclick="showTab('profile')">
+            <span class="emoji">👤</span>
+            <span>Профиль</span>
         </div>
     </div>
 
-    <!-- Case Opening Modal -->
-    <div id="caseOpening" class="modal">
-        <div class="modal-content">
-            <h3 id="openingCaseName">Открытие кейса</h3>
+    <!-- Оверлей открытия кейса -->
+    <div id="caseOpening" class="case-opening-overlay">
+        <div class="case-opening-container">
+            <h2 id="openingCaseName">Открываем кейс...</h2>
             
             <div class="items-scroll" id="itemsScroll">
-                <!-- Items loaded by JavaScript -->
+                <!-- Предметы для прокрутки -->
             </div>
 
-            <button class="modal-btn" onclick="startOpening()" id="startBtn">🎲 Открыть за <span id="casePrice">0</span> жетонов</button>
+            <button class="open-btn" onclick="startOpening()" id="startBtn">🎲 Начать открытие</button>
             
             <div id="result" style="display: none;">
-                <div class="won-item">
-                    <div style="font-size: 18px;">🎉 Поздравляем!</div>
-                    <div id="wonItemName" style="margin: 8px 0;"></div>
-                    <div id="wonItemRarity" style="font-size: 12px;"></div>
+                <div class="won-item" id="wonItem">
+                    <h3>🎉 Поздравляем!</h3>
+                    <div id="wonItemName" style="font-size: 20px; font-weight: bold;"></div>
+                    <div id="wonItemRarity" style="font-size: 16px;"></div>
                 </div>
-                <button class="modal-btn" onclick="closeCaseOpening()">Продолжить</button>
+                <button class="close-btn" onclick="closeCaseOpening()">Закрыть</button>
             </div>
         </div>
     </div>
 
-    <!-- Deposit Modal -->
+    <!-- Пополнение баланса -->
     <div id="depositModal" class="modal">
         <div class="modal-content">
             <h3>💳 Пополнение баланса</h3>
-            <input type="number" id="depositAmount" placeholder="Сумма в рублях" 
-                   style="width: 100%; padding: 12px; margin: 12px 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: var(--tg-text);">
-            <input type="text" id="promoCodeInput" placeholder="Промокод (необязательно)" 
-                   style="width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: var(--tg-text);">
-            <div id="promoBonus" style="margin: 8px 0; font-size: 12px;"></div>
-            <button class="modal-btn" onclick="processDeposit()">Пополнить</button>
-            <button class="modal-btn" onclick="closeDeposit()" style="background: rgba(255,255,255,0.1); color: var(--tg-text);">Отмена</button>
+            <input type="number" id="depositAmount" placeholder="Сумма в рублях" class="modal-input">
+            <input type="text" id="promoCodeInput" placeholder="Промокод (необязательно)" class="modal-input">
+            <div id="promoBonus" style="margin: 10px 0; color: var(--secondary); font-weight: 500;"></div>
+            <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                <button onclick="processDeposit()" class="modal-btn">Пополнить</button>
+                <button onclick="closeDeposit()" class="modal-btn cancel">Отмена</button>
+            </div>
         </div>
     </div>
 
-    <!-- Toast Container -->
-    <div id="toast" class="toast"></div>
-
     <script>
-        // Telegram Web App initialization
+        // Инициализация Telegram Web App
         let tg = window.Telegram.WebApp;
-        
-        // Initialize Telegram Web App
         tg.expand();
         tg.enableClosingConfirmation();
-        tg.BackButton.hide();
 
-        // User data
+        // Данные пользователя
         let userData = {
             balance: 1500,
-            openedCases: 12,
-            refCount: 3,
-            level: 5,
-            refLink: "https://t.me/your_bot?start=ref_" + Math.random().toString(36).substr(2, 9)
+            refLink: "https://t.me/your_bot?start=ref_" + Math.random().toString(36).substr(2, 9),
+            refCount: 3
         };
 
-        // Promocodes
+        // Промокоды (можно менять через админку)
         const promoCodes = {
-            "WELCOME20": { percent: 20, description: "Новым игрокам" },
-            "TELEGRAM30": { percent: 30, description: "Специальный для Telegram" }
+            "WELCOME20": { percent: 20, description: "Приветственный бонус +20%" },
+            "SUPER50": { percent: 50, description: "Супер промокод +50%" },
+            "BONUS30": { percent: 30, description: "Бонус на пополнение +30%" },
+            "RICH100": { percent: 100, description: "Удвой свой депозит +100%" }
         };
 
-        let currentPromo = "WELCOME20";
-        let currentCase = null;
-        let isOpening = false;
+        let currentPromo = "WELCOME20"; // Активный промокод
 
-        // Items database
+        // База данных предметов с РАЗНЫМИ вероятностями для каждого кейса
         const itemsDatabase = [
+            // Common
             { id: 1, name: "🔧 Обычный инструмент", rarity: "common", emoji: "🔧" },
             { id: 2, name: "📦 Простая коробка", rarity: "common", emoji: "📦" },
             { id: 3, name: "💧 Капля воды", rarity: "common", emoji: "💧" },
             { id: 4, name: "🌿 Листок", rarity: "common", emoji: "🌿" },
+            
+            // Rare
             { id: 5, name: "🔮 Магический шар", rarity: "rare", emoji: "🔮" },
             { id: 6, name: "⚡ Молния", rarity: "rare", emoji: "⚡" },
             { id: 7, name: "🛡️ Щит воина", rarity: "rare", emoji: "🛡️" },
             { id: 8, name: "🎯 Меткий глаз", rarity: "rare", emoji: "🎯" },
+            
+            // Epic
             { id: 9, name: "🔥 Огненный меч", rarity: "epic", emoji: "🔥" },
             { id: 10, name: "❄️ Ледяная корона", rarity: "epic", emoji: "❄️" },
             { id: 11, name: "💎 Алмаз", rarity: "epic", emoji: "💎" },
             { id: 12, name: "👑 Королевский скипетр", rarity: "epic", emoji: "👑" },
+            
+            // Legendary
             { id: 13, name: "🐉 Драконье яйцо", rarity: "legendary", emoji: "🐉" },
             { id: 14, name: "🌈 Радужный артефакт", rarity: "legendary", emoji: "🌈" },
             { id: 15, name: "⚔️ Меч богов", rarity: "legendary", emoji: "⚔️" },
-            { id: 16, name: "🌟 Звезда судьбы", rarity: "mythical", emoji: "🌟" }
+            
+            // Mythical
+            { id: 16, name: "🌟 Звезда судьбы", rarity: "mythical", emoji: "🌟" },
+            { id: 17, name: "💫 Космический кристалл", rarity: "mythical", emoji: "💫" }
         ];
 
-        // Cases database
+        // База данных кейсов с РАЗНЫМИ вероятностями для каждого
         const casesDatabase = [
             {
                 id: 1,
                 name: "📦 Базовый кейс",
                 price: 100,
                 emoji: "📦",
-                items: itemsDatabase.filter(item => ["common", "rare"].includes(item.rarity))
+                items: [
+                    // Common: 70%, Rare: 20%, Epic: 8%, Legendary: 2%
+                    ...itemsDatabase.filter(i => i.rarity === "common").map(i => ({...i, probability: 70/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "rare").map(i => ({...i, probability: 20/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "epic").map(i => ({...i, probability: 8/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "legendary").map(i => ({...i, probability: 2/3}))
+                ]
             },
             {
                 id: 2,
                 name: "💎 Премиум кейс",
                 price: 500,
                 emoji: "💎",
-                items: itemsDatabase.filter(item => ["rare", "epic"].includes(item.rarity))
+                items: [
+                    // Common: 40%, Rare: 35%, Epic: 15%, Legendary: 8%, Mythical: 2%
+                    ...itemsDatabase.filter(i => i.rarity === "common").map(i => ({...i, probability: 40/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "rare").map(i => ({...i, probability: 35/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "epic").map(i => ({...i, probability: 15/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "legendary").map(i => ({...i, probability: 8/3})),
+                    ...itemsDatabase.filter(i => i.rarity === "mythical").map(i => ({...i, probability: 2/2}))
+                ]
             },
             {
                 id: 3,
                 name: "🔥 Огненный кейс",
                 price: 1000,
                 emoji: "🔥",
-                items: itemsDatabase.filter(item => ["epic", "legendary"].includes(item.rarity))
+                items: [
+                    // Rare: 50%, Epic: 30%, Legendary: 15%, Mythical: 5%
+                    ...itemsDatabase.filter(i => i.rarity === "rare").map(i => ({...i, probability: 50/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "epic").map(i => ({...i, probability: 30/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "legendary").map(i => ({...i, probability: 15/3})),
+                    ...itemsDatabase.filter(i => i.rarity === "mythical").map(i => ({...i, probability: 5/2}))
+                ]
             },
             {
                 id: 4,
                 name: "👑 Легендарный кейс",
                 price: 5000,
                 emoji: "👑",
-                items: itemsDatabase.filter(item => ["legendary", "mythical"].includes(item.rarity))
+                items: [
+                    // Epic: 40%, Legendary: 40%, Mythical: 20%
+                    ...itemsDatabase.filter(i => i.rarity === "epic").map(i => ({...i, probability: 40/4})),
+                    ...itemsDatabase.filter(i => i.rarity === "legendary").map(i => ({...i, probability: 40/3})),
+                    ...itemsDatabase.filter(i => i.rarity === "mythical").map(i => ({...i, probability: 20/2}))
+                ]
             }
         ];
 
-        // Initialize app
-        function initApp() {
-            loadUserData();
-            setupTelegramUser();
+        let currentCase = null;
+        let isOpening = false;
+
+        // Загрузка данных при запуске
+        function loadUserData() {
             loadPromoBanner();
+            updateProfile();
             loadCases();
             loadTasks();
-            updateProfile();
-        }
-
-        function setupTelegramUser() {
-            const user = tg.initDataUnsafe?.user;
-            if (user) {
-                document.getElementById('userName').textContent = user.first_name || 'Пользователь';
-                document.getElementById('userAvatar').textContent = user.first_name?.[0] || 'U';
-            }
-        }
-
-        function loadUserData() {
-            document.getElementById('userBalance').textContent = userData.balance.toLocaleString() + ' жетонов';
         }
 
         function loadPromoBanner() {
@@ -713,20 +929,81 @@
                 document.getElementById('promoBanner').style.display = 'block';
                 document.getElementById('promoPercent').textContent = promo.percent;
                 document.getElementById('promoCodeDisplay').textContent = currentPromo;
+                document.getElementById('promoDescription').textContent = promo.description;
             }
+        }
+
+        function updateProfile() {
+            document.getElementById('profileInfo').innerHTML = `
+                <div class="profile-card">
+                    <div class="balance">${userData.balance.toLocaleString()} жетонов</div>
+                    <div style="margin: 15px 0;">
+                        <div>Реферальная ссылка:</div>
+                        <div class="ref-link">${userData.refLink}</div>
+                    </div>
+                    <div>Приглашено друзей: ${userData.refCount}</div>
+                    <button onclick="copyRefLink()" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; margin-top: 15px; font-weight: 600;">📋 Скопировать ссылку</button>
+                </div>
+            `;
+        }
+
+        function copyRefLink() {
+            navigator.clipboard.writeText(userData.refLink);
+            showNotification('Ссылка скопирована в буфер обмена!');
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--success);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 10px;
+                z-index: 3000;
+                font-weight: 600;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
 
         function loadCases() {
             const grid = document.getElementById('casesGrid');
-            grid.innerHTML = casesDatabase.map(caseItem => `
-                <div class="case-card rarity-${caseItem.id === 4 ? 'legendary' : caseItem.id === 3 ? 'epic' : caseItem.id === 2 ? 'rare' : 'common'}" 
-                     onclick="selectCase(${caseItem.id})">
-                    <div class="case-image">${caseItem.emoji}</div>
-                    <div class="case-name">${caseItem.name}</div>
-                    <div class="case-price">${caseItem.price.toLocaleString()} жетонов</div>
-                    <div class="case-stats">${caseItem.items.length} предметов</div>
-                </div>
-            `).join('');
+            grid.innerHTML = casesDatabase.map(caseItem => {
+                const rarityStats = calculateRarityStats(caseItem.items);
+                return `
+                    <div class="case-card" onclick="selectCase(${caseItem.id})">
+                        <div class="case-image">${caseItem.emoji}</div>
+                        <div class="case-name">${caseItem.name}</div>
+                        <div class="case-price">${caseItem.price.toLocaleString()} жетонов</div>
+                        <div class="case-stats">
+                            <div class="stat">📊 Шансы:</div>
+                            <div class="stat">⭐ ${rarityStats.legendary}%</div>
+                            <div class="stat">💎 ${rarityStats.mythical}%</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function calculateRarityStats(items) {
+            const stats = { common: 0, rare: 0, epic: 0, legendary: 0, mythical: 0 };
+            items.forEach(item => {
+                stats[item.rarity] += item.probability;
+            });
+            // Округляем до целых чисел
+            for (let rarity in stats) {
+                stats[rarity] = Math.round(stats[rarity]);
+            }
+            return stats;
         }
 
         function loadTasks() {
@@ -739,56 +1016,40 @@
 
             document.getElementById('tasksList').innerHTML = tasks.map(task => `
                 <div class="task-item">
-                    <div class="task-header">
-                        <div style="font-weight: 600;">${task.title}</div>
-                        <div class="task-reward">+${task.reward}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600;">${task.title}</div>
+                            <div style="font-size: 13px; opacity: 0.8; margin-top: 5px;">+${task.reward} жетонов</div>
+                        </div>
+                        <button onclick="completeTask(this)" 
+                                style="background: ${task.completed ? 'var(--success)' : 'var(--danger)'}; 
+                                       border: none; padding: 10px 18px; border-radius: 10px; color: white; font-weight: 600;"
+                                ${task.completed ? 'disabled' : ''}>
+                            ${task.completed ? '✅ Выполнено' : 'Выполнить'}
+                        </button>
                     </div>
-                    <div style="font-size: 12px; opacity: 0.8;">Выполните задание и получите награду</div>
-                    <button class="task-btn" onclick="completeTask(this)" ${task.completed ? 'disabled' : ''}>
-                        ${task.completed ? '✅ Выполнено' : 'Выполнить'}
-                    </button>
                 </div>
             `).join('');
-        }
-
-        function updateProfile() {
-            document.getElementById('statBalance').textContent = userData.balance.toLocaleString();
-            document.getElementById('statCases').textContent = userData.openedCases;
-            document.getElementById('statRefs').textContent = userData.refCount;
-            document.getElementById('statLevel').textContent = userData.level;
-            document.getElementById('refLink').textContent = userData.refLink;
-        }
-
-        function showTab(tabName) {
-            // Update navigation
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            document.querySelectorAll('.nav-item')[tabName === 'cases' ? 0 : tabName === 'tasks' ? 1 : 2].classList.add('active');
-            
-            // Update content
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
         }
 
         function selectCase(caseId) {
             currentCase = casesDatabase.find(c => c.id === caseId);
             
             if (userData.balance < currentCase.price) {
-                showToast('❌ Недостаточно жетонов');
+                showNotification('❌ Недостаточно жетонов для открытия этого кейса!');
                 return;
             }
 
-            document.getElementById('openingCaseName').textContent = currentCase.name;
-            document.getElementById('casePrice').textContent = currentCase.price.toLocaleString();
+            document.getElementById('openingCaseName').textContent = `Открываем: ${currentCase.name}`;
             document.getElementById('caseOpening').style.display = 'flex';
             document.getElementById('startBtn').style.display = 'block';
             document.getElementById('result').style.display = 'none';
 
-            // Load items for scroll
             const scroll = document.getElementById('itemsScroll');
             scroll.innerHTML = currentCase.items.map(item => `
                 <div class="scroll-item rarity-${item.rarity}">
                     <div class="item-image">${item.emoji}</div>
-                    <div style="font-size: 9px;">${item.name.split(' ')[0]}</div>
+                    <div style="font-size: 10px;">${item.name}</div>
                 </div>
             `).join('');
         }
@@ -797,63 +1058,139 @@
             if (isOpening) return;
             isOpening = true;
 
-            userData.balance -= currentCase.price;
-            userData.openedCases++;
-            updateProfile();
-            loadUserData();
-
             document.getElementById('startBtn').style.display = 'none';
+            userData.balance -= currentCase.price;
+            updateProfile();
 
+            // ЗАРАНЕЕ определяем выигрышный предмет по вероятностям
+            const wonItem = selectWonItem(currentCase.items);
+            
             const scroll = document.getElementById('itemsScroll');
             const items = scroll.children;
-            const wonItem = currentCase.items[Math.floor(Math.random() * currentCase.items.length)];
-            
             let currentIndex = 0;
-            const duration = 3000;
-            const startTime = Date.now();
+            const scrollDuration = 4000; // 4 секунды прокрутки
+            const interval = 100;
 
-            function animate() {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1);
+            let startTime = Date.now();
+            let speed = 8; // Начальная скорость
+            let targetIndex = -1; // Индекс выигрышного предмета в прокрутке
 
-                // Fast then slow animation
-                const speed = progress < 0.7 ? 8 : 2;
-                currentIndex = (currentIndex + speed) % items.length;
-
-                // Update active item
-                Array.from(items).forEach((item, index) => {
-                    item.classList.toggle('active', Math.floor(currentIndex) === index);
-                });
-
-                if (progress < 1) {
-                    setTimeout(animate, 50);
-                } else {
-                    // Show result
-                    setTimeout(() => showResult(wonItem), 500);
+            // Находим индекс выигрышного предмета в DOM
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].querySelector('.item-image').textContent === wonItem.emoji) {
+                    targetIndex = i;
+                    break;
                 }
             }
 
-            animate();
+            // Если не нашли, берем случайный
+            if (targetIndex === -1) targetIndex = Math.floor(Math.random() * items.length);
+
+            function animateScroll() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / scrollDuration, 1);
+
+                // Динамическое изменение скорости
+                if (progress < 0.3) {
+                    speed = 8; // Быстро в начале
+                } else if (progress < 0.7) {
+                    speed = 4; // Замедляем
+                } else {
+                    // В конце точно останавливаемся на выигрышном предмете
+                    const remainingTime = scrollDuration - elapsed;
+                    if (remainingTime > 500) {
+                        speed = 2;
+                    } else {
+                        // Финальное замедление и точная остановка
+                        const distanceToTarget = (targetIndex - currentIndex + items.length) % items.length;
+                        speed = Math.max(0.5, distanceToTarget * (remainingTime / 500));
+                    }
+                }
+
+                currentIndex = (currentIndex + speed * interval / 1000) % items.length;
+
+                // Сбрасываем активный класс
+                for (let item of items) {
+                    item.classList.remove('active');
+                }
+
+                // Активный элемент - текущий в прокрутке
+                const activeIndex = Math.floor(currentIndex) % items.length;
+                items[activeIndex].classList.add('active');
+
+                // Прокрутка к активному элементу
+                scroll.scrollLeft = activeIndex * 95;
+
+                if (progress < 1) {
+                    setTimeout(animateScroll, interval);
+                } else {
+                    // Финальная корректировка - точно на выигрышном предмете
+                    setTimeout(() => {
+                        for (let item of items) {
+                            item.classList.remove('active');
+                        }
+                        items[targetIndex].classList.add('active');
+                        scroll.scrollLeft = targetIndex * 95;
+                        
+                        // Задержка перед показом результата
+                        setTimeout(() => finishOpening(wonItem), 800);
+                    }, 200);
+                }
+            }
+
+            animateScroll();
         }
 
-        function showResult(wonItem) {
+        // Новая функция для выбора предмета по вероятностям
+        function selectWonItem(items) {
+            // Создаем массив с учетом вероятностей
+            let weightedItems = [];
+            
+            items.forEach(item => {
+                // Добавляем предмет N раз в зависимости от его вероятности
+                const count = Math.max(1, Math.floor(item.probability / 10));
+                for (let i = 0; i < count; i++) {
+                    weightedItems.push(item);
+                }
+            });
+            
+            // Выбираем случайный предмет из взвешенного списка
+            const randomIndex = Math.floor(Math.random() * weightedItems.length);
+            return weightedItems[randomIndex];
+        }
+
+        // Обновленная функция finishOpening
+        function finishOpening(wonItem) {
+            // Показываем результат
             document.getElementById('wonItemName').textContent = wonItem.name;
             document.getElementById('wonItemRarity').textContent = `Редкость: ${getRarityName(wonItem.rarity)}`;
+            document.getElementById('wonItem').className = `won-item rarity-${wonItem.rarity}`;
             document.getElementById('result').style.display = 'block';
 
-            // Add reward based on rarity
-            const rewards = { common: 10, rare: 25, epic: 100, legendary: 500, mythical: 2000 };
+            // Добавляем награду в зависимости от редкости
+            const rewards = {
+                'common': 10,
+                'rare': 25,
+                'epic': 100,
+                'legendary': 500,
+                'mythical': 2000
+            };
+
             userData.balance += rewards[wonItem.rarity];
             updateProfile();
-            loadUserData();
 
             isOpening = false;
-            showToast(`🎉 Вы выиграли: ${wonItem.name} (+${rewards[wonItem.rarity]} жетонов)`);
+            
+            // Показываем уведомление о выигрыше
+            showNotification(`🎉 Вы выиграли: ${wonItem.name} (+${rewards[wonItem.rarity]} жетонов)`);
         }
 
         function getRarityName(rarity) {
-            const names = { common: 'Обычная', rare: 'Редкая', epic: 'Эпическая', legendary: 'Легендарная', mythical: 'Мифическая' };
-            return names[rarity];
+            const names = {
+                'common': 'Обычная', 'rare': 'Редкая', 'epic': 'Эпическая', 
+                'legendary': 'Легендарная', 'mythical': 'Мифическая'
+            };
+            return names[rarity] || rarity;
         }
 
         function closeCaseOpening() {
@@ -862,17 +1199,18 @@
         }
 
         function completeTask(button) {
-            const reward = parseInt(button.parentElement.querySelector('.task-reward').textContent);
+            const reward = 50;
             userData.balance += reward;
             button.textContent = '✅ Выполнено';
+            button.style.background = 'var(--success)';
             button.disabled = true;
             updateProfile();
-            loadUserData();
-            showToast(`✅ Задание выполнено! +${reward} жетонов`);
+            showNotification(`✅ Задание выполнено! +${reward} жетонов`);
         }
 
         function openDeposit() {
             document.getElementById('depositModal').style.display = 'flex';
+            document.getElementById('promoBonus').textContent = '';
         }
 
         function closeDeposit() {
@@ -884,7 +1222,7 @@
             const promoCode = document.getElementById('promoCodeInput').value.toUpperCase();
             
             if (!amount || amount < 10) {
-                showToast('Минимальная сумма: 10 рублей');
+                showNotification('Минимальная сумма пополнения: 10 рублей');
                 return;
             }
 
@@ -896,34 +1234,43 @@
             const total = amount + bonus;
             userData.balance += total;
             
-            showToast(`✅ Пополнено ${total} жетонов!${bonus ? ` (+${bonus} бонус)` : ''}`);
+            showNotification(`✅ Баланс пополнен на ${total} жетонов!${bonus ? `\n🎁 Бонус за промокод: +${bonus} жетонов` : ''}`);
             updateProfile();
-            loadUserData();
             closeDeposit();
         }
 
-        function copyRefLink() {
-            navigator.clipboard.writeText(userData.refLink);
-            showToast('📋 Ссылка скопирована');
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            // Прокрутка к верху при переключении табов
+            window.scrollTo(0, 0);
         }
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', initApp);
-
-        // Handle Telegram theme changes
-        tg.onEvent('themeChanged', () => {
-            document.body.style.backgroundColor = tg.themeParams.bg_color || '#0f0f0f';
+        // Автоматическая проверка промокода при вводе
+        document.getElementById('promoCodeInput')?.addEventListener('input', function(e) {
+            const code = e.target.value.toUpperCase();
+            if (promoCodes[code]) {
+                document.getElementById('promoBonus').textContent = 
+                    `✅ Промокод активирован! Бонус: +${promoCodes[code].percent}%`;
+                document.getElementById('promoBonus').style.color = 'var(--success)';
+            } else if (code.length > 3) {
+                document.getElementById('promoBonus').textContent = '❌ Промокод не найден';
+                document.getElementById('promoBonus').style.color = 'var(--danger)';
+            } else {
+                document.getElementById('promoBonus').textContent = '';
+            }
         });
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadUserData);
     </script>
 </body>
 </html>
