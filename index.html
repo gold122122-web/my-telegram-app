@@ -646,81 +646,133 @@
         }
 
         function startOpening() {
-            if (isOpening) return;
-            isOpening = true;
+    if (isOpening) return;
+    isOpening = true;
 
-            document.getElementById('startBtn').style.display = 'none';
-            userData.balance -= currentCase.price;
-            updateProfile();
+    document.getElementById('startBtn').style.display = 'none';
+    userData.balance -= currentCase.price;
+    updateProfile();
 
-            const scroll = document.getElementById('itemsScroll');
-            const items = scroll.children;
-            let currentIndex = 0;
-            const totalItems = items.length;
-            const scrollDuration = 3000;
-            const interval = 100;
+    // ЗАРАНЕЕ определяем выигрышный предмет по вероятностям
+    const wonItem = selectWonItem(currentCase.items);
+    console.log("Выигрышный предмет определен:", wonItem.name);
+    
+    const scroll = document.getElementById('itemsScroll');
+    const items = scroll.children;
+    let currentIndex = 0;
+    const scrollDuration = 4000; // 4 секунды прокрутки
+    const interval = 100;
 
-            let startTime = Date.now();
-            let speed = 5;
+    let startTime = Date.now();
+    let speed = 8; // Начальная скорость
+    let targetIndex = -1; // Индекс выигрышного предмета в прокрутке
 
-            function animateScroll() {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / scrollDuration, 1);
+    // Находим индекс выигрышного предмета в DOM
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].querySelector('.item-image').textContent === wonItem.emoji) {
+            targetIndex = i;
+            break;
+        }
+    }
 
-                if (progress > 0.7) {
-                    speed = Math.max(1, 5 * (1 - progress) * 3);
-                }
+    // Если не нашли, берем случайный
+    if (targetIndex === -1) targetIndex = Math.floor(Math.random() * items.length);
 
-                currentIndex = (currentIndex + speed * interval / 1000) % totalItems;
+    function animateScroll() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / scrollDuration, 1);
 
+        // Динамическое изменение скорости
+        if (progress < 0.3) {
+            speed = 8; // Быстро в начале
+        } else if (progress < 0.7) {
+            speed = 4; // Замедляем
+        } else {
+            // В конце точно останавливаемся на выигрышном предмете
+            const remainingTime = scrollDuration - elapsed;
+            if (remainingTime > 500) {
+                speed = 2;
+            } else {
+                // Финальное замедление и точная остановка
+                const distanceToTarget = (targetIndex - currentIndex + items.length) % items.length;
+                speed = Math.max(0.5, distanceToTarget * (remainingTime / 500));
+            }
+        }
+
+        currentIndex = (currentIndex + speed * interval / 1000) % items.length;
+
+        // Сбрасываем активный класс
+        for (let item of items) {
+            item.classList.remove('active');
+        }
+
+        // Активный элемент - текущий в прокрутке
+        const activeIndex = Math.floor(currentIndex) % items.length;
+        items[activeIndex].classList.add('active');
+
+        // Прокрутка к активному элементу
+        scroll.scrollLeft = activeIndex * 95;
+
+        if (progress < 1) {
+            setTimeout(animateScroll, interval);
+        } else {
+            // Финальная корректировка - точно на выигрышном предмете
+            setTimeout(() => {
                 for (let item of items) {
                     item.classList.remove('active');
                 }
-
-                const activeIndex = Math.floor(currentIndex);
-                items[activeIndex].classList.add('active');
-                scroll.scrollLeft = activeIndex * 95;
-
-                if (progress < 1) {
-                    setTimeout(animateScroll, interval);
-                } else {
-                    finishOpening();
-                }
-            }
-
-            animateScroll();
+                items[targetIndex].classList.add('active');
+                scroll.scrollLeft = targetIndex * 95;
+                
+                // Задержка перед показом результата
+                setTimeout(() => finishOpening(wonItem), 800);
+            }, 200);
         }
+    }
 
-        function finishOpening() {
-            // Выбор предмета с учетом вероятности
-            let random = Math.random() * 100;
-            let cumulativeProbability = 0;
-            let wonItem = null;
+    animateScroll();
+}
 
-            for (let item of currentCase.items) {
-                cumulativeProbability += item.probability;
-                if (random <= cumulativeProbability) {
-                    wonItem = item;
-                    break;
-                }
-            }
-
-            if (!wonItem) wonItem = currentCase.items[0];
-
-            document.getElementById('wonItemName').textContent = wonItem.name;
-            document.getElementById('wonItemRarity').textContent = `Редкость: ${getRarityName(wonItem.rarity)}`;
-            document.getElementById('wonItem').className = `won-item rarity-${wonItem.rarity}`;
-            document.getElementById('result').style.display = 'block';
-
-            const rewards = {
-                'common': 10, 'rare': 25, 'epic': 100, 'legendary': 500, 'mythical': 2000
-            };
-
-            userData.balance += rewards[wonItem.rarity];
-            updateProfile();
-            isOpening = false;
+// Новая функция для выбора предмета по вероятностям
+function selectWonItem(items) {
+    // Создаем массив с учетом вероятностей
+    let weightedItems = [];
+    
+    items.forEach(item => {
+        // Добавляем предмет N раз в зависимости от его вероятности
+        const count = Math.max(1, Math.floor(item.probability / 10));
+        for (let i = 0; i < count; i++) {
+            weightedItems.push(item);
         }
+    });
+    
+    // Выбираем случайный предмет из взвешенного списка
+    const randomIndex = Math.floor(Math.random() * weightedItems.length);
+    return weightedItems[randomIndex];
+}
 
+// Обновленная функция finishOpening
+function finishOpening(wonItem) {
+    // Показываем результат
+    document.getElementById('wonItemName').textContent = wonItem.name;
+    document.getElementById('wonItemRarity').textContent = `Редкость: ${getRarityName(wonItem.rarity)}`;
+    document.getElementById('wonItem').className = `won-item rarity-${wonItem.rarity}`;
+    document.getElementById('result').style.display = 'block';
+
+    // Добавляем награду в зависимости от редкости
+    const rewards = {
+        'common': 10,
+        'rare': 25,
+        'epic': 100,
+        'legendary': 500,
+        'mythical': 2000
+    };
+
+    userData.balance += rewards[wonItem.rarity];
+    updateProfile();
+
+    isOpening = false;
+}
         function getRarityName(rarity) {
             const names = {
                 'common': 'Обычная', 'rare': 'Редкая', 'epic': 'Эпическая', 
@@ -807,3 +859,4 @@
     </script>
 </body>
 </html>
+
