@@ -10,142 +10,265 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #f59e0b;
+            --secondary-dark: #d97706;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --common: #94a3b8;
+            --rare: #3b82f6;
+            --epic: #8b5cf6;
+            --legendary: #f59e0b;
+            --mythical: #ef4444;
         }
 
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: var(--light);
             min-height: 100vh;
-            padding: 20px 20px 80px 20px; /* Отступ снизу для фиксированного меню */
+            padding: 20px 20px 100px 20px;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
+            z-index: -1;
         }
 
         .container {
-            max-width: 400px;
+            max-width: 450px;
             margin: 0 auto;
+            animation: fadeIn 0.8s ease-out;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); box-shadow: 0 0 20px gold; }
-            100% { transform: scale(1); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        .scroll-item.active {
-            transition: all 0.3s ease;
-        }
+
+        /* Шапка */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding: 15px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            padding: 18px 20px;
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .header:hover::after {
+            left: 100%;
         }
 
         .online {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             font-size: 14px;
+            font-weight: 500;
         }
 
         .online-dot {
-            width: 8px;
-            height: 8px;
-            background: #00ff00;
+            width: 10px;
+            height: 10px;
+            background: var(--success);
             border-radius: 50%;
+            position: relative;
+        }
+
+        .online-dot::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 50%;
+            border: 1px solid var(--success);
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
         }
 
         .deposit-btn {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
             border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            color: #000;
-            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 15px;
+            color: white;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .deposit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .deposit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .deposit-btn:hover::before {
+            left: 100%;
         }
 
         /* Промокод баннер */
         .promo-banner {
-            background: linear-gradient(45deg, #FF416C, #FF4B2B);
-            padding: 12px;
-            border-radius: 12px;
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+            padding: 16px;
+            border-radius: 18px;
             text-align: center;
-            margin-bottom: 15px;
-            animation: glow 2s infinite;
-            font-size: 14px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+            animation: glow 3s infinite alternate;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         @keyframes glow {
-            0% { box-shadow: 0 0 10px #FF416C; }
-            50% { box-shadow: 0 0 20px #FF4B2B; }
-            100% { box-shadow: 0 0 10px #FF416C; }
+            0% { box-shadow: 0 5px 20px rgba(236, 72, 153, 0.4); }
+            100% { box-shadow: 0 5px 30px rgba(139, 92, 246, 0.6); }
+        }
+
+        .promo-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, white, transparent);
         }
 
         .promo-code {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
-            margin: 5px 0;
-            background: rgba(255,255,255,0.2);
-            padding: 5px 10px;
-            border-radius: 8px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 12px;
             display: inline-block;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            letter-spacing: 1px;
         }
 
         /* Фиксированное меню внизу */
         .bottom-tabs {
             position: fixed;
             bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(26, 26, 46, 0.95);
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 450px;
+            background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(20px);
             display: flex;
-            padding: 10px 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 20px;
+            border-radius: 25px 25px 0 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.3);
             z-index: 1000;
+            margin-bottom: 10px;
         }
 
         .tab-btn {
             flex: 1;
             text-align: center;
-            padding: 12px 5px;
+            padding: 10px 5px;
             cursor: pointer;
-            border-radius: 12px;
-            transition: all 0.3s;
+            border-radius: 15px;
+            transition: all 0.3s ease;
             font-size: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 5px;
+            position: relative;
+            color: var(--gray);
         }
 
         .tab-btn.active {
-            background: rgba(255,255,255,0.15);
+            color: white;
             transform: translateY(-5px);
         }
 
+        .tab-btn.active::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            width: 30px;
+            height: 3px;
+            background: var(--secondary);
+            border-radius: 3px;
+        }
+
         .tab-btn .emoji {
-            font-size: 20px;
+            font-size: 22px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active .emoji {
+            transform: scale(1.2);
         }
 
         .tab-content {
             display: none;
-            animation: fadeIn 0.3s;
+            animation: slideUp 0.4s ease-out;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -156,62 +279,137 @@
         /* Стили для контента */
         .section-title {
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 24px;
+            margin-bottom: 25px;
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
         }
 
         .cases-grid {
             display: grid;
-            gap: 15px;
+            gap: 18px;
         }
 
         .case-card {
-            background: linear-gradient(135deg, #2d3436, #636e72);
-            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border-radius: 20px;
             padding: 20px;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .case-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
         }
 
         .case-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .case-image {
-            width: 80px;
-            height: 80px;
+            width: 90px;
+            height: 90px;
             margin: 0 auto 15px;
-            background: linear-gradient(135deg, #74b9ff, #0984e3);
-            border-radius: 15px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
-            border: 3px solid #fff;
+            font-size: 36px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .case-card:hover .case-image {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
         }
 
         .case-name {
             font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
 
         .case-price {
-            color: #FFD700;
-            font-weight: bold;
+            color: var(--secondary);
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .case-stats {
+            font-size: 12px;
+            opacity: 0.8;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         /* Редкости предметов */
-        .rarity-common { border-color: #bdc3c7 !important; }
-        .rarity-rare { border-color: #3498db !important; }
-        .rarity-epic { border-color: #9b59b6 !important; }
-        .rarity-legendary { border-color: #f1c40f !important; }
-        .rarity-mythical { border-color: #e74c3c !important; }
+        .rarity-common { 
+            border-color: var(--common) !important; 
+            background: linear-gradient(135deg, rgba(148, 163, 184, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+        }
+        
+        .rarity-rare { 
+            border-color: var(--rare) !important; 
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+        }
+        
+        .rarity-epic { 
+            border-color: var(--epic) !important; 
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+        }
+        
+        .rarity-legendary { 
+            border-color: var(--legendary) !important; 
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+        }
+        
+        .rarity-mythical { 
+            border-color: var(--mythical) !important; 
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+        }
 
         /* Анимация открытия кейса */
         .case-opening-overlay {
@@ -220,17 +418,35 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(2, 6, 23, 0.95);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 2000;
+            backdrop-filter: blur(10px);
         }
 
         .case-opening-container {
             width: 90%;
             max-width: 500px;
             text-align: center;
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 25px;
+            padding: 30px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .case-opening-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
         }
 
         .items-scroll {
@@ -239,101 +455,255 @@
             overflow: hidden;
             margin: 30px 0;
             padding: 20px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(30, 41, 59, 0.5);
             border-radius: 15px;
             max-height: 150px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .scroll-item {
             min-width: 80px;
-            padding: 10px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            transition: transform 0.3s;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
         }
 
         .scroll-item.active {
             transform: scale(1.2);
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 2;
         }
 
         .item-image {
             width: 60px;
             height: 60px;
             margin: 0 auto 10px;
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 28px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.1);
         }
 
         .won-item {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            padding: 30px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--legendary) 100%);
+            padding: 25px;
             border-radius: 20px;
             margin-top: 20px;
-            animation: bounce 0.6s;
-            color: #000;
+            animation: bounce 0.8s;
+            color: white;
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .won-item::before {
+            content: '🎉';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            opacity: 0.7;
         }
 
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-20px);}
-            60% {transform: translateY(-10px);}
+            40% {transform: translateY(-15px);}
+            60% {transform: translateY(-7px);}
         }
 
         .open-btn {
-            background: linear-gradient(45deg, #FF416C, #FF4B2B);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             border: none;
-            padding: 15px 30px;
+            padding: 16px 40px;
             border-radius: 25px;
             color: white;
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
             margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .open-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.6);
         }
 
         .close-btn {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.1);
             border: none;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border-radius: 20px;
             color: white;
             cursor: pointer;
             margin-top: 15px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         /* Стили для заданий и профиля */
         .task-item {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.7);
+            padding: 18px;
+            margin: 12px 0;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .task-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .profile-card {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+            padding: 25px;
+            border-radius: 20px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .balance {
-            font-size: 28px;
-            font-weight: bold;
-            color: #FFD700;
-            margin: 10px 0;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 15px 0;
+            text-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
         }
 
         .ref-link {
-            background: rgba(255,255,255,0.2);
-            padding: 10px;
-            border-radius: 10px;
-            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 12px;
+            margin: 15px 0;
             word-break: break-all;
             font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Модальное окно пополнения */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+            padding: 30px;
+            border-radius: 25px;
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.7);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 8px 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 140px;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .modal-btn.cancel {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .modal-btn.cancel:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .case-image {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+            
+            .bottom-tabs {
+                width: calc(100% - 20px);
+                padding: 10px 15px;
+            }
         }
     </style>
 </head>
@@ -350,7 +720,7 @@
 
         <!-- Промокод баннер -->
         <div id="promoBanner" class="promo-banner" style="display: none;">
-            <div><strong>🎊 ПРОМОКОД ДЕЙСТВУЕТ СЕЙЧАС!</strong></div>
+            <div><strong>🎊 АКТИВНЫЙ ПРОМОКОД!</strong></div>
             <div>Используйте при пополнении для бонуса +<span id="promoPercent">0</span>%</div>
             <div class="promo-code" id="promoCodeDisplay">Загрузка...</div>
             <div id="promoDescription"></div>
@@ -420,14 +790,16 @@
     </div>
 
     <!-- Пополнение баланса -->
-    <div id="depositModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center;">
-        <div style="background: #2d3436; padding: 30px; border-radius: 20px; text-align: center; max-width: 300px;">
+    <div id="depositModal" class="modal">
+        <div class="modal-content">
             <h3>💳 Пополнение баланса</h3>
-            <input type="number" id="depositAmount" placeholder="Сумма в рублях" style="width: 100%; padding: 10px; margin: 15px 0; border-radius: 10px; border: none;">
-            <input type="text" id="promoCodeInput" placeholder="Промокод (необязательно)" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 10px; border: none;">
-            <div id="promoBonus" style="margin: 10px 0; color: #FFD700;"></div>
-            <button onclick="processDeposit()" style="background: #27ae60; color: white; border: none; padding: 12px 30px; border-radius: 10px; cursor: pointer; margin: 5px;">Пополнить</button>
-            <button onclick="closeDeposit()" style="background: #e74c3c; color: white; border: none; padding: 12px 30px; border-radius: 10px; cursor: pointer; margin: 5px;">Отмена</button>
+            <input type="number" id="depositAmount" placeholder="Сумма в рублях" class="modal-input">
+            <input type="text" id="promoCodeInput" placeholder="Промокод (необязательно)" class="modal-input">
+            <div id="promoBonus" style="margin: 10px 0; color: var(--secondary); font-weight: 500;"></div>
+            <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                <button onclick="processDeposit()" class="modal-btn">Пополнить</button>
+                <button onclick="closeDeposit()" class="modal-btn cancel">Отмена</button>
+            </div>
         </div>
     </div>
 
@@ -564,20 +936,43 @@
         function updateProfile() {
             document.getElementById('profileInfo').innerHTML = `
                 <div class="profile-card">
-                    <div class="balance">${userData.balance} жетонов</div>
+                    <div class="balance">${userData.balance.toLocaleString()} жетонов</div>
                     <div style="margin: 15px 0;">
                         <div>Реферальная ссылка:</div>
                         <div class="ref-link">${userData.refLink}</div>
                     </div>
                     <div>Приглашено друзей: ${userData.refCount}</div>
-                    <button onclick="copyRefLink()" style="background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin-top: 10px;">📋 Скопировать ссылку</button>
+                    <button onclick="copyRefLink()" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; margin-top: 15px; font-weight: 600;">📋 Скопировать ссылку</button>
                 </div>
             `;
         }
 
         function copyRefLink() {
             navigator.clipboard.writeText(userData.refLink);
-            alert('Ссылка скопирована в буфер обмена!');
+            showNotification('Ссылка скопирована в буфер обмена!');
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--success);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 10px;
+                z-index: 3000;
+                font-weight: 600;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
 
         function loadCases() {
@@ -588,9 +983,11 @@
                     <div class="case-card" onclick="selectCase(${caseItem.id})">
                         <div class="case-image">${caseItem.emoji}</div>
                         <div class="case-name">${caseItem.name}</div>
-                        <div class="case-price">${caseItem.price} жетонов</div>
-                        <div style="font-size: 12px; opacity: 0.8; margin-top: 8px;">
-                            Шансы: ЛЕГ ${rarityStats.legendary}% | МИФ ${rarityStats.mythical}%
+                        <div class="case-price">${caseItem.price.toLocaleString()} жетонов</div>
+                        <div class="case-stats">
+                            <div class="stat">📊 Шансы:</div>
+                            <div class="stat">⭐ ${rarityStats.legendary}%</div>
+                            <div class="stat">💎 ${rarityStats.mythical}%</div>
                         </div>
                     </div>
                 `;
@@ -602,6 +999,10 @@
             items.forEach(item => {
                 stats[item.rarity] += item.probability;
             });
+            // Округляем до целых чисел
+            for (let rarity in stats) {
+                stats[rarity] = Math.round(stats[rarity]);
+            }
             return stats;
         }
 
@@ -617,12 +1018,12 @@
                 <div class="task-item">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <div style="font-weight: bold;">${task.title}</div>
-                            <div style="font-size: 12px; opacity: 0.8;">+${task.reward} жетонов</div>
+                            <div style="font-weight: 600;">${task.title}</div>
+                            <div style="font-size: 13px; opacity: 0.8; margin-top: 5px;">+${task.reward} жетонов</div>
                         </div>
                         <button onclick="completeTask(this)" 
-                                style="background: ${task.completed ? '#27ae60' : '#e74c3c'}; 
-                                       border: none; padding: 8px 15px; border-radius: 10px; color: white;"
+                                style="background: ${task.completed ? 'var(--success)' : 'var(--danger)'}; 
+                                       border: none; padding: 10px 18px; border-radius: 10px; color: white; font-weight: 600;"
                                 ${task.completed ? 'disabled' : ''}>
                             ${task.completed ? '✅ Выполнено' : 'Выполнить'}
                         </button>
@@ -635,7 +1036,7 @@
             currentCase = casesDatabase.find(c => c.id === caseId);
             
             if (userData.balance < currentCase.price) {
-                alert('❌ Недостаточно жетонов для открытия этого кейса!');
+                showNotification('❌ Недостаточно жетонов для открытия этого кейса!');
                 return;
             }
 
@@ -654,133 +1055,136 @@
         }
 
         function startOpening() {
-    if (isOpening) return;
-    isOpening = true;
+            if (isOpening) return;
+            isOpening = true;
 
-    document.getElementById('startBtn').style.display = 'none';
-    userData.balance -= currentCase.price;
-    updateProfile();
+            document.getElementById('startBtn').style.display = 'none';
+            userData.balance -= currentCase.price;
+            updateProfile();
 
-    // ЗАРАНЕЕ определяем выигрышный предмет по вероятностям
-    const wonItem = selectWonItem(currentCase.items);
-    console.log("Выигрышный предмет определен:", wonItem.name);
-    
-    const scroll = document.getElementById('itemsScroll');
-    const items = scroll.children;
-    let currentIndex = 0;
-    const scrollDuration = 4000; // 4 секунды прокрутки
-    const interval = 100;
+            // ЗАРАНЕЕ определяем выигрышный предмет по вероятностям
+            const wonItem = selectWonItem(currentCase.items);
+            
+            const scroll = document.getElementById('itemsScroll');
+            const items = scroll.children;
+            let currentIndex = 0;
+            const scrollDuration = 4000; // 4 секунды прокрутки
+            const interval = 100;
 
-    let startTime = Date.now();
-    let speed = 8; // Начальная скорость
-    let targetIndex = -1; // Индекс выигрышного предмета в прокрутке
+            let startTime = Date.now();
+            let speed = 8; // Начальная скорость
+            let targetIndex = -1; // Индекс выигрышного предмета в прокрутке
 
-    // Находим индекс выигрышного предмета в DOM
-    for (let i = 0; i < items.length; i++) {
-        if (items[i].querySelector('.item-image').textContent === wonItem.emoji) {
-            targetIndex = i;
-            break;
-        }
-    }
-
-    // Если не нашли, берем случайный
-    if (targetIndex === -1) targetIndex = Math.floor(Math.random() * items.length);
-
-    function animateScroll() {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / scrollDuration, 1);
-
-        // Динамическое изменение скорости
-        if (progress < 0.3) {
-            speed = 8; // Быстро в начале
-        } else if (progress < 0.7) {
-            speed = 4; // Замедляем
-        } else {
-            // В конце точно останавливаемся на выигрышном предмете
-            const remainingTime = scrollDuration - elapsed;
-            if (remainingTime > 500) {
-                speed = 2;
-            } else {
-                // Финальное замедление и точная остановка
-                const distanceToTarget = (targetIndex - currentIndex + items.length) % items.length;
-                speed = Math.max(0.5, distanceToTarget * (remainingTime / 500));
+            // Находим индекс выигрышного предмета в DOM
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].querySelector('.item-image').textContent === wonItem.emoji) {
+                    targetIndex = i;
+                    break;
+                }
             }
-        }
 
-        currentIndex = (currentIndex + speed * interval / 1000) % items.length;
+            // Если не нашли, берем случайный
+            if (targetIndex === -1) targetIndex = Math.floor(Math.random() * items.length);
 
-        // Сбрасываем активный класс
-        for (let item of items) {
-            item.classList.remove('active');
-        }
+            function animateScroll() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / scrollDuration, 1);
 
-        // Активный элемент - текущий в прокрутке
-        const activeIndex = Math.floor(currentIndex) % items.length;
-        items[activeIndex].classList.add('active');
+                // Динамическое изменение скорости
+                if (progress < 0.3) {
+                    speed = 8; // Быстро в начале
+                } else if (progress < 0.7) {
+                    speed = 4; // Замедляем
+                } else {
+                    // В конце точно останавливаемся на выигрышном предмете
+                    const remainingTime = scrollDuration - elapsed;
+                    if (remainingTime > 500) {
+                        speed = 2;
+                    } else {
+                        // Финальное замедление и точная остановка
+                        const distanceToTarget = (targetIndex - currentIndex + items.length) % items.length;
+                        speed = Math.max(0.5, distanceToTarget * (remainingTime / 500));
+                    }
+                }
 
-        // Прокрутка к активному элементу
-        scroll.scrollLeft = activeIndex * 95;
+                currentIndex = (currentIndex + speed * interval / 1000) % items.length;
 
-        if (progress < 1) {
-            setTimeout(animateScroll, interval);
-        } else {
-            // Финальная корректировка - точно на выигрышном предмете
-            setTimeout(() => {
+                // Сбрасываем активный класс
                 for (let item of items) {
                     item.classList.remove('active');
                 }
-                items[targetIndex].classList.add('active');
-                scroll.scrollLeft = targetIndex * 95;
-                
-                // Задержка перед показом результата
-                setTimeout(() => finishOpening(wonItem), 800);
-            }, 200);
+
+                // Активный элемент - текущий в прокрутке
+                const activeIndex = Math.floor(currentIndex) % items.length;
+                items[activeIndex].classList.add('active');
+
+                // Прокрутка к активному элементу
+                scroll.scrollLeft = activeIndex * 95;
+
+                if (progress < 1) {
+                    setTimeout(animateScroll, interval);
+                } else {
+                    // Финальная корректировка - точно на выигрышном предмете
+                    setTimeout(() => {
+                        for (let item of items) {
+                            item.classList.remove('active');
+                        }
+                        items[targetIndex].classList.add('active');
+                        scroll.scrollLeft = targetIndex * 95;
+                        
+                        // Задержка перед показом результата
+                        setTimeout(() => finishOpening(wonItem), 800);
+                    }, 200);
+                }
+            }
+
+            animateScroll();
         }
-    }
 
-    animateScroll();
-}
-
-// Новая функция для выбора предмета по вероятностям
-function selectWonItem(items) {
-    // Создаем массив с учетом вероятностей
-    let weightedItems = [];
-    
-    items.forEach(item => {
-        // Добавляем предмет N раз в зависимости от его вероятности
-        const count = Math.max(1, Math.floor(item.probability / 10));
-        for (let i = 0; i < count; i++) {
-            weightedItems.push(item);
+        // Новая функция для выбора предмета по вероятностям
+        function selectWonItem(items) {
+            // Создаем массив с учетом вероятностей
+            let weightedItems = [];
+            
+            items.forEach(item => {
+                // Добавляем предмет N раз в зависимости от его вероятности
+                const count = Math.max(1, Math.floor(item.probability / 10));
+                for (let i = 0; i < count; i++) {
+                    weightedItems.push(item);
+                }
+            });
+            
+            // Выбираем случайный предмет из взвешенного списка
+            const randomIndex = Math.floor(Math.random() * weightedItems.length);
+            return weightedItems[randomIndex];
         }
-    });
-    
-    // Выбираем случайный предмет из взвешенного списка
-    const randomIndex = Math.floor(Math.random() * weightedItems.length);
-    return weightedItems[randomIndex];
-}
 
-// Обновленная функция finishOpening
-function finishOpening(wonItem) {
-    // Показываем результат
-    document.getElementById('wonItemName').textContent = wonItem.name;
-    document.getElementById('wonItemRarity').textContent = `Редкость: ${getRarityName(wonItem.rarity)}`;
-    document.getElementById('wonItem').className = `won-item rarity-${wonItem.rarity}`;
-    document.getElementById('result').style.display = 'block';
+        // Обновленная функция finishOpening
+        function finishOpening(wonItem) {
+            // Показываем результат
+            document.getElementById('wonItemName').textContent = wonItem.name;
+            document.getElementById('wonItemRarity').textContent = `Редкость: ${getRarityName(wonItem.rarity)}`;
+            document.getElementById('wonItem').className = `won-item rarity-${wonItem.rarity}`;
+            document.getElementById('result').style.display = 'block';
 
-    // Добавляем награду в зависимости от редкости
-    const rewards = {
-        'common': 10,
-        'rare': 25,
-        'epic': 100,
-        'legendary': 500,
-        'mythical': 2000
-    };
+            // Добавляем награду в зависимости от редкости
+            const rewards = {
+                'common': 10,
+                'rare': 25,
+                'epic': 100,
+                'legendary': 500,
+                'mythical': 2000
+            };
 
-    userData.balance += rewards[wonItem.rarity];
-    updateProfile();
+            userData.balance += rewards[wonItem.rarity];
+            updateProfile();
 
-    isOpening = false;
-}
+            isOpening = false;
+            
+            // Показываем уведомление о выигрыше
+            showNotification(`🎉 Вы выиграли: ${wonItem.name} (+${rewards[wonItem.rarity]} жетонов)`);
+        }
+
         function getRarityName(rarity) {
             const names = {
                 'common': 'Обычная', 'rare': 'Редкая', 'epic': 'Эпическая', 
@@ -798,9 +1202,10 @@ function finishOpening(wonItem) {
             const reward = 50;
             userData.balance += reward;
             button.textContent = '✅ Выполнено';
-            button.style.background = '#27ae60';
+            button.style.background = 'var(--success)';
             button.disabled = true;
             updateProfile();
+            showNotification(`✅ Задание выполнено! +${reward} жетонов`);
         }
 
         function openDeposit() {
@@ -817,7 +1222,7 @@ function finishOpening(wonItem) {
             const promoCode = document.getElementById('promoCodeInput').value.toUpperCase();
             
             if (!amount || amount < 10) {
-                alert('Минимальная сумма пополнения: 10 рублей');
+                showNotification('Минимальная сумма пополнения: 10 рублей');
                 return;
             }
 
@@ -829,7 +1234,7 @@ function finishOpening(wonItem) {
             const total = amount + bonus;
             userData.balance += total;
             
-            alert(`✅ Баланс пополнен на ${total} жетонов!${bonus ? `\n🎁 Бонус за промокод: +${bonus} жетонов` : ''}`);
+            showNotification(`✅ Баланс пополнен на ${total} жетонов!${bonus ? `\n🎁 Бонус за промокод: +${bonus} жетонов` : ''}`);
             updateProfile();
             closeDeposit();
         }
@@ -843,7 +1248,7 @@ function finishOpening(wonItem) {
             });
 
             document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            event.currentTarget.classList.add('active');
 
             // Прокрутка к верху при переключении табов
             window.scrollTo(0, 0);
@@ -855,8 +1260,10 @@ function finishOpening(wonItem) {
             if (promoCodes[code]) {
                 document.getElementById('promoBonus').textContent = 
                     `✅ Промокод активирован! Бонус: +${promoCodes[code].percent}%`;
+                document.getElementById('promoBonus').style.color = 'var(--success)';
             } else if (code.length > 3) {
                 document.getElementById('promoBonus').textContent = '❌ Промокод не найден';
+                document.getElementById('promoBonus').style.color = 'var(--danger)';
             } else {
                 document.getElementById('promoBonus').textContent = '';
             }
@@ -867,5 +1274,3 @@ function finishOpening(wonItem) {
     </script>
 </body>
 </html>
-
-
