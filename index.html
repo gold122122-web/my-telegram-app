@@ -283,7 +283,6 @@
             font-size: 26px;
             font-weight: 700;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             position: relative;
             display: inline-block;
@@ -356,6 +355,22 @@
             transform: scale(1.1) rotate(5deg);
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
         }
+
+        .inventory-item {
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .inventory-item:hover {
+            transform: translateX(5px);
+            background: rgba(255,255,255,0.05) !important;
+        }
+
+        .rarity-common { border-left: 4px solid var(--common); }
+        .rarity-rare { border-left: 4px solid var(--rare); }
+        .rarity-epic { border-left: 4px solid var(--epic); }
+        .rarity-legendary { border-left: 4px solid var(--legendary); }
+        .rarity-mythical { border-left: 4px solid var(--mythical); }
 
         .case-name {
             font-size: 18px;
@@ -933,18 +948,99 @@
             }
         }
 
-        function updateProfile() {
-            document.getElementById('profileInfo').innerHTML = `
-                <div class="profile-card">
-                    <div class="balance">${userData.balance.toLocaleString()} жетонов</div>
-                    <div style="margin: 15px 0;">
-                        <div>Реферальная ссылка:</div>
-                        <div class="ref-link">${userData.refLink}</div>
+       function updateProfile() {
+    // Загружаем инвентарь с сервера
+    fetch(`/api/user/inventory/${tg.initDataUnsafe.user.id}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const inventoryHTML = data.inventory.length > 0 ? 
+                    data.inventory.map(item => `
+                        <div class="inventory-item rarity-${item.rarity}" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; margin: 5px 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 20px;">${item.emoji}</span>
+                                <div>
+                                    <div style="font-weight: 600;">${item.name}</div>
+                                    <div style="font-size: 12px; opacity: 0.8;">${getRarityName(item.rarity)}</div>
+                                </div>
+                            </div>
+                            <button onclick="sellItem(${item.id})" style="background: var(--success); border: none; padding: 8px 12px; border-radius: 8px; color: white; cursor: pointer;">
+                                💰 ${item.value}
+                            </button>
+                        </div>
+                    `).join('') : 
+                    '<div style="text-align: center; opacity: 0.7; padding: 20px;">Инвентарь пуст</div>';
+
+                document.getElementById('profileInfo').innerHTML = `
+                    <div class="profile-card">
+                        <div class="balance">${userData.balance.toLocaleString()} жетонов</div>
+                        <div style="margin: 15px 0;">
+                            <div>Реферальная ссылка:</div>
+                            <div class="ref-link">${userData.refLink}</div>
+                        </div>
+                        <div>Приглашено друзей: ${userData.refCount}</div>
+                        
+                        <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                            <h3>🎒 Ваш инвентарь (${data.count})</h3>
+                            <div id="inventoryList">
+                                ${inventoryHTML}
+                            </div>
+                            ${data.count > 0 ? `
+                                <button onclick="sellAllItems()" style="background: var(--danger); color: white; border: none; padding: 10px 15px; border-radius: 10px; margin-top: 10px; cursor: pointer;">
+                                    💰 Продать все
+                                </button>
+                            ` : ''}
+                        </div>
+                        
+                        <button onclick="copyRefLink()" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; margin-top: 15px; font-weight: 600;">📋 Скопировать ссылку</button>
                     </div>
-                    <div>Приглашено друзей: ${userData.refCount}</div>
-                    <button onclick="copyRefLink()" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; margin-top: 15px; font-weight: 600;">📋 Скопировать ссылку</button>
-                </div>
-            `;
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading inventory:', error);
+        });
+}
+
+function sellItem(itemId) {
+    fetch('/api/sell-item', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            user_id: tg.initDataUnsafe.user.id,
+            item_id: itemId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(`✅ Предмет продан за ${data.item_value} жетонов!`);
+            userData.balance = data.new_balance;
+            updateProfile();
+        } else {
+            showNotification('❌ Ошибка при продаже предмета');
+        }
+    });
+}
+
+        function sellAllItems() {
+            fetch('/api/sell-all-items', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: tg.initDataUnsafe.user.id
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(`✅ Продано ${data.items_sold} предметов за ${data.total_value} жетонов!`);
+                    userData.balance = data.new_balance;
+                    updateProfile();
+                } else {
+                    showNotification('❌ Ошибка при продаже предметов');
+                }
+            });
         }
 
         function copyRefLink() {
@@ -1161,28 +1257,36 @@
 
         // Обновленная функция finishOpening
         function finishOpening(wonItem) {
-            // Показываем результат
-            document.getElementById('wonItemName').textContent = wonItem.name;
-            document.getElementById('wonItemRarity').textContent = `Редкость: ${getRarityName(wonItem.rarity)}`;
-            document.getElementById('wonItem').className = `won-item rarity-${wonItem.rarity}`;
-            document.getElementById('result').style.display = 'block';
+            // Сохраняем предмет на сервере
+            fetch('/api/open-case', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: tg.initDataUnsafe.user.id,
+                    case_id: currentCase.id,
+                    item_name: wonItem.name,
+                    item_rarity: wonItem.rarity,
+                    item_emoji: wonItem.emoji,
+                    item_value: rewards[wonItem.rarity]
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Показываем результат
+                    document.getElementById('wonItemName').textContent = wonItem.name;
+                    document.getElementById('wonItemRarity').textContent = `Редкость: ${getRarityName(wonItem.rarity)}`;
+                    document.getElementById('wonItem').className = `won-item rarity-${wonItem.rarity}`;
+                    document.getElementById('result').style.display = 'block';
 
-            // Добавляем награду в зависимости от редкости
-            const rewards = {
-                'common': 10,
-                'rare': 25,
-                'epic': 100,
-                'legendary': 500,
-                'mythical': 2000
-            };
+                    userData.balance = data.new_balance;
+                    updateProfile();
 
-            userData.balance += rewards[wonItem.rarity];
-            updateProfile();
+                    showNotification(`🎉 Вы выиграли: ${wonItem.name} (+${rewards[wonItem.rarity]} жетонов)`);
+                }
+            });
 
             isOpening = false;
-            
-            // Показываем уведомление о выигрыше
-            showNotification(`🎉 Вы выиграли: ${wonItem.name} (+${rewards[wonItem.rarity]} жетонов)`);
         }
 
         function getRarityName(rarity) {
